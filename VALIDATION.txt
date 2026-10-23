@@ -1,0 +1,20 @@
+Validation on October 23, 2026
+
+Executed: python -m pytest -q — 17 passed.
+Executed: python demo.py — wrote Power BI ZIP, regression metrics and predictions.
+Demo input: 201 rows; cleaned: 200; duplicate rows removed: 1; missing cells retained: 1.
+Regression after feature/target deduplication: 121 train rows, 41 test rows; seed 42.
+Model MAE: 42.660914634146344; mean baseline MAE: 392.46376738560775.
+These measurements are on synthetic retail data; the revenue target is calculated from the predictors. They are not evidence of a real forecasting advantage or business impact.
+
+Core initially tested with Python 3.13.5, pandas 2.3.1, scikit-learn 1.8.0, pytest 9.1.1.
+Full app suite additionally passed with pandas 3.1.0, Streamlit 1.66.1, DSPy 3.4.1, E2B code interpreter 2.11.3 and E2B 2.59.0.
+Tests cover normalization/deduplication, missing-value preservation, known-answer aggregation, offline refusal, CSV limits, export formula escaping, target-in-predictor rejection, reproducibility and sandbox teardown with a mock.
+Streamlit AppTest covers initial rendering, offline answers, unsupported questions, ML evaluation, missing AI configuration, dataset replacement clearing old results, and invalid uploads.
+Real browser: rendered the app, confirmed its 5 MB upload control, ran Revenue by region, and inspected the result table. Screenshot: docs/app.png.
+Real DSPy typed-signature execution passed using DSPy's scripted DummyLM. Installed E2B SDK method signatures match the adapter's arguments. Mock adapter tests are not credentialed integration tests.
+
+Power BI Desktop: native report opened, embedded synthetic data refreshed, nine visuals rendered. Confirmed 200 orders, $98,108.25 revenue in reconciliation table, $490.54 average order value and 2,031 units. Region slicer: East produced 51 orders, $28,040.50 revenue, $549.81 AOV and 542 units; clearing it restored 200 orders and $98,108.25. The missing-region measure explicitly filters Unknown and remains 1 when another region is selected.
+Power BI report-format compatibility: metadata version 2.0.0 is required for this June 2025 Desktop installation. Earlier draft versions passed schema validation but did not render, and were retired. Final project: powerbi/project/EvidenceAnalyst.pbip. PBIR definition files: 13 passed validation against Microsoft's published JSON schemas. Screenshots: docs/dashboard.png and docs/dashboard-east.png.
+Power BI is delivered as an editable .pbip project with report and semantic model folders, not a .pbix binary or a Power BI Service publication. Opening without a local data cache requires Refresh; only synthetic data is embedded.
+Not verified: live DSPy provider call, live E2B execution, production deployment or public multi-user security. No service credentials were configured in this session. scripts/smoke_live.py provides an opt-in known-answer test.

@@ -1,0 +1,8 @@
+{
+  "model_mae": 42.660914634146344,
+  "baseline_mae": 392.46376738560775,
+  "train_rows": 121,
+  "test_rows": 41,
+  "seed": 42,
+  "caution": "Random holdout only. Manually exclude leakage; use time/group split for dependent records. Synthetic data is not business validation."
+}

@@ -1,0 +1,8 @@
+column,dtype,missing,unique
+order_id,object,0,200
+order_date,object,0,28
+region,object,1,4
+units,int64,0,20
+unit_price,int64,0,5
+discount,float64,0,4
+revenue,float64,0,130

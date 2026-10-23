@@ -1,0 +1,7 @@
+{
+  "input_rows": 201,
+  "output_rows": 200,
+  "duplicates_removed": 1,
+  "missing_cells": 1,
+  "policy": "Trim strings and remove exact duplicates; preserve missing values. No automatic imputation."
+}

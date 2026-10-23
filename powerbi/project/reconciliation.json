@@ -1,0 +1,15 @@
+{
+  "orders": 200,
+  "revenue": 98108.25,
+  "units": 2031,
+  "aov": 490.54125,
+  "missing_regions": 1,
+  "region_revenue": {
+    "East": 28040.5,
+    "North": 32678.25,
+    "South": 21523.0,
+    "Unknown": 112.5,
+    "West": 15754.0
+  },
+  "note": "Synthetic data. Unknown replaces null region only in dashboard presentation."
+}

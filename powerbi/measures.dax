@@ -1,0 +1,7 @@
+Total Revenue = SUM(Orders[revenue])
+
+Order Count = DISTINCTCOUNT(Orders[order_id])
+
+Average Order Value = DIVIDE([Total Revenue], [Order Count])
+
+Units Sold = SUM(Orders[units])

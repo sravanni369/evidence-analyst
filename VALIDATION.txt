@@ -43,3 +43,11 @@ Independent check (csv module + Decimal, no pandas): identical on every count an
 Real browser: uploaded the file into the running app; screenshots docs/iowa-2026-app.png and docs/iowa-2026-quality.png.
 Findings: 30 return lines (negative bottles); 963 lines where sales_dollars differs from bottles x state_bottle_retail by more than 0.01, so published revenue is used; store_no leading zeros are dropped when pandas infers an integer type (totals unaffected).
 Executed: python -m pytest -q: 21 passed. ML on this data: MAE 83.57 vs baseline 659.72 (revenue is largely units x price, so again not forecasting evidence).
+
+Live AI verification on October 24, 2026 (supersedes the "Not verified" notes above for the live DSPy and E2B path):
+Executed on the owner's Windows PC: powershell -ExecutionPolicy Bypass -File scripts\live_check.ps1, model deepseek/deepseek-flash via DSPy 3.4.1 / LiteLLM, E2B code interpreter 2.11.3.
+DSPy generated pandas code (recorded in docs/live-check-2026-10-24.txt); it was reviewed before execution (imports pandas only, reads /home/user/input.csv, groups revenue by region, writes /home/user/answer.csv). The owner typed RUN; the code ran in a live E2B sandbox (internet disabled) and the result matched the known answer East=5, West=4.
+Result: "PASS: live DSPy -> E2B known-answer test", exit code 0. The log was checked and contains no API keys.
+Fixes made during this check: live_check.ps1 no longer lets Windows PowerShell turn Python's stderr into a fatal error that hid the real message; smoke_live.py writes its own log including tracebacks. publish.ps1 had the same issue on its "does the repo exist" check and is fixed the same way.
+Scope: one known-answer question end to end. It does not show that arbitrary generated code is correct; generated code is always shown for review before execution.
+Still not verified: production deployment or public multi-user security.

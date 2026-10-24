@@ -115,7 +115,7 @@ Numeric regression uses a fixed random holdout, training-only median imputation,
 ## Boundaries and current status
 
 - 21 automated tests pass, covering the core, Streamlit interactions, uploaded-dataset changes, mocked sandbox cleanup, and known answers on two real datasets (Iowa Liquor Sales 2026 and UCI Online Retail). A real DSPy signature is tested with a scripted model.
-- AI adapter follows official APIs but live cloud execution needs credentials and remains unverified until run.
+- Live AI mode verified on October 24, 2026: DeepSeek via DSPy generated the code and a live E2B sandbox ran it, matching a known answer (`docs/live-check-2026-10-24.txt`). Using it requires your own LLM and E2B keys.
 - A native Power BI project is included at `powerbi/project/EvidenceAnalyst.pbip`, with embedded synthetic data, DAX measures and nine visuals. See `powerbi/README.md` and `VALIDATION.txt` for Desktop validation status.
 - UI verification status is recorded in VALIDATION.txt.
 - File limit: 5 MB at the upload widget, 50,000 rows and 100 columns checked after CSV parsing. This is not a hardened public upload service.
@@ -148,16 +148,26 @@ Rebuild definitions with `python scripts/build_powerbi.py` while the project is 
 
 ## Live integration check
 
-After configuring provider credentials and E2B, run `python scripts/smoke_live.py`. It displays generated code, asks before executing it, and compares the cloud result with a known answer. It can incur service charges. No successful live call is claimed without executing this check.
+**Status: passed on October 24, 2026.** DeepSeek (`deepseek/deepseek-flash`) generated the code through DSPy, it was reviewed, then executed in a live E2B sandbox, and the result matched the known answer (East = 5, West = 4). The full run is in [`docs/live-check-2026-10-24.txt`](docs/live-check-2026-10-24.txt), including the exact generated code:
 
-The LLM can be a local [Ollama](https://ollama.com) model, so only E2B needs an account (it has a free tier):
+```python
+import pandas as pd
+
+df = pd.read_csv("/home/user/input.csv")
+answer = df.groupby("region", as_index=False)["revenue"].sum()
+answer = answer[["region", "revenue"]]
+answer.to_csv("/home/user/answer.csv", index=False)
+```
+
+To repeat it on Windows (keys are typed with hidden input, held only in that PowerShell process, and never written to the log):
 
 ```powershell
-ollama pull llama3.1                      # any local chat model
-$env:LLM_MODEL = 'ollama_chat/llama3.1'   # no LLM API key needed
-$env:E2B_API_KEY = Read-Host 'E2B key'    # typed locally, never committed
-python scripts/smoke_live.py
+powershell -ExecutionPolicy Bypass -File scripts\live_check.ps1
 ```
+
+The script creates `.venv`, installs `requirements.txt`, asks for a DeepSeek API key and an E2B key, shows the generated code, and runs it only after you type `RUN`. It can incur small service charges. Any LiteLLM model works: set `$env:LLM_MODEL` first, for example `ollama_chat/llama3.1` for a free local [Ollama](https://ollama.com) model (then only E2B needs a key). On other systems, set the variables and run `python scripts/smoke_live.py`.
+
+This verifies one known-answer question end to end. It does not show that every generated program is correct, which is why generated code is always displayed for review before it runs.
 
 ## Interview demo (90 seconds)
 
@@ -166,4 +176,4 @@ python scripts/smoke_live.py
 3. Ask Revenue by region and inspect the resulting table.
 4. Compare model MAE with the mean baseline; disclose synthetic data and random-split limits.
 5. Export the bundle and explain the Power BI measures.
-6. If credentials are configured, show DSPy-generated code and E2B execution. Otherwise explicitly label this path as unverified.
+6. Show the AI path: DSPy-generated code, the review step, and E2B execution. If no keys are configured during the demo, show `docs/live-check-2026-10-24.txt` from the verified run instead.

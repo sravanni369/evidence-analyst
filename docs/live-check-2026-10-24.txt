@@ -1,0 +1,10 @@
+Live check started 2026-10-24T17:22:46 with model deepseek/deepseek-flash
+Generated code (review before execution):
+ import pandas as pd
+
+df = pd.read_csv("/home/user/input.csv")
+answer = df.groupby("region", as_index=False)["revenue"].sum()
+answer = answer[["region", "revenue"]]
+answer.to_csv("/home/user/answer.csv", index=False)
+Run this code in E2B using synthetic data? Type RUN and press Enter: RUN
+PASS: live DSPy -> E2B known-answer test

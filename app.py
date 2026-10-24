@@ -17,7 +17,8 @@ identity = hashlib.sha256(raw).hexdigest()
 if st.session_state.get('dataset') != identity:
     st.session_state.clear()
     st.session_state['dataset'] = identity
-st.info('Bundled sample is synthetic retail data. Offline questions use fixed Python functions; AI mode uses DSPy and E2B.')
+source = f"Uploaded file: {getattr(upload, 'name', 'your CSV')}." if upload else 'Bundled sample is synthetic retail data.'
+st.info(f'{source} Offline questions use fixed Python functions; AI mode uses DSPy and E2B.')
 a,b,c = st.columns(3)
 a.metric('Cleaned rows', len(df)); b.metric('Duplicates removed', audit['duplicates_removed']); c.metric('Missing cells', audit['missing_cells'])
 with st.expander('Cleaning policy and preview', expanded=True):

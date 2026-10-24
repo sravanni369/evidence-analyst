@@ -51,6 +51,27 @@ python -m pytest -q
 
 The sample contains 201 synthetic retail rows, one exact duplicate and one missing region. Cleaning removes the duplicate and preserves the missing value. No real customers or financial outcomes are represented.
 
+## Verified on real data
+
+The app has also been run on one real month (December 2010) of the **UCI Online Retail** dataset: real UK e-commerce transactions, not pre-cleaned. Upload `data/online_retail_2010-12.csv` in the app to reproduce it, or rebuild the file from the original source with `python scripts/prepare_online_retail.py` (needs `openpyxl`; checks the download's SHA-256).
+
+| Check | App result | Independent check |
+|---|---|---|
+| Rows in → after cleaning | 42,481 → 41,981 | same |
+| Exact duplicates removed | 500 | same |
+| Missing cells (customer IDs, kept, not imputed) | 15,627 | same |
+| Countries | 24 | same |
+| Net revenue, all countries | £746,723.61 | same, to the penny |
+| United Kingdom revenue | £674,615.86 | same, to the penny |
+
+The independent check does not use pandas: it uses Python's `csv` module and exact `Decimal` arithmetic. `tests/test_real_data.py` locks these answers in, so CI re-verifies them on every push. Revenue is net of 789 cancellation lines (negative quantities), which are kept because they are real refunds.
+
+| Real data: Revenue by region | Real data: quality profile |
+|---|---|
+| ![App answering Revenue by region on real December 2010 data](docs/real-data-app.png) | ![Data quality profile on real data showing 15,627 missing customer IDs](docs/real-data-quality.png) |
+
+Dataset credit: Daqing Chen, *Online Retail*, UCI Machine Learning Repository (2015), [doi:10.24432/C5BW33](https://doi.org/10.24432/C5BW33), licensed [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The repository includes a column-mapped extract of one month; the mapping is in the prep script.
+
 ## Two analysis paths
 
 Offline mode supports four explicit question forms: `How many rows?`, `Show missing values`, `Summarize numeric columns`, and `Revenue by region`. These are fixed functions, not LLM output.
@@ -73,7 +94,7 @@ Numeric regression uses a fixed random holdout, training-only median imputation,
 
 ## Boundaries and current status
 
-- 17 automated tests pass, covering the core, Streamlit interactions, uploaded-dataset changes, and mocked sandbox cleanup. A real DSPy signature is tested with a scripted model.
+- 20 automated tests pass, covering the core, Streamlit interactions, uploaded-dataset changes, mocked sandbox cleanup, and known answers on real UCI Online Retail data. A real DSPy signature is tested with a scripted model.
 - AI adapter follows official APIs but live cloud execution needs credentials and remains unverified until run.
 - A native Power BI project is included at `powerbi/project/EvidenceAnalyst.pbip`, with embedded synthetic data, DAX measures and nine visuals. See `powerbi/README.md` and `VALIDATION.txt` for Desktop validation status.
 - UI verification status is recorded in VALIDATION.txt.
@@ -108,6 +129,15 @@ Rebuild definitions with `python scripts/build_powerbi.py` while the project is 
 ## Live integration check
 
 After configuring provider credentials and E2B, run `python scripts/smoke_live.py`. It displays generated code, asks before executing it, and compares the cloud result with a known answer. It can incur service charges. No successful live call is claimed without executing this check.
+
+The LLM can be a local [Ollama](https://ollama.com) model, so only E2B needs an account (it has a free tier):
+
+```powershell
+ollama pull llama3.1                      # any local chat model
+$env:LLM_MODEL = 'ollama_chat/llama3.1'   # no LLM API key needed
+$env:E2B_API_KEY = Read-Host 'E2B key'    # typed locally, never committed
+python scripts/smoke_live.py
+```
 
 ## Interview demo (90 seconds)
 

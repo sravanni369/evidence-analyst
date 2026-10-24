@@ -4,5 +4,5 @@
   "train_rows": 121,
   "test_rows": 41,
   "seed": 42,
-  "caution": "Random holdout only. Manually exclude leakage; use time/group split for dependent records. Synthetic data is not business validation."
+  "caution": "Random holdout only. Manually exclude leakage; use time/group split for dependent records. A low error on a target derived from the predictors is not business validation."
 }

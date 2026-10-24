@@ -23,3 +23,14 @@ Re-verified on October 24, 2026 before publishing (Linux, Python 3.13, fresh ven
 Executed: python -m pytest -v — 17 passed. Executed: python demo.py — metrics identical to the values above.
 App screenshots docs/app.png, docs/data-quality.png and docs/ml-baseline.png were captured from the running Streamlit app (headless Chromium) on the bundled synthetic data; docs/tests.png renders the real pytest output.
 Cross-check: app Revenue by region gives East 28,040.50 and a five-region total of 98,108.25, matching the Power BI reconciliation table.
+
+Real-data verification on October 24, 2026:
+Dataset: UCI Online Retail (Daqing Chen, 2015, doi:10.24432/C5BW33, CC BY 4.0), downloaded from archive.ics.uci.edu; zip SHA-256 f5385cbb54bbebf7196389109c6b0621faab0c304e3702548165e71c84aede8b.
+Extract: December 2010 only (to fit the 50,000-row limit), columns mapped by scripts/prepare_online_retail.py, no pre-cleaning. data/online_retail_2010-12.csv SHA-256 940927d59a518bf0be48963e62cd152700bd1267762bacafcd21fa93655c2358, 42,481 rows, 2.60 MB.
+App results: 41,981 rows after cleaning; 500 exact duplicates removed; 15,627 missing cells (all customer_id, preserved); 24 countries; net revenue 746,723.61; United Kingdom 674,615.86.
+Independent check (Python csv module + Decimal, no pandas): identical on every count and on every country's revenue to the penny.
+Real browser: uploaded the file into the running Streamlit app, confirmed the same metrics and table. Screenshots: docs/real-data-app.png, docs/real-data-quality.png.
+Bug found and fixed by this test: the banner said "Bundled sample is synthetic" even after an upload; it now names the uploaded file. Covered by tests/test_real_data.py.
+Executed: python -m pytest -q: 20 passed (17 previous + 3 real-data known-answer tests).
+ML note: on this data revenue = units x unit_price, so the regression is again trivially predictable (MAE 15.78 vs baseline 123.74); not evidence of forecasting skill.
+Still not verified: live DSPy provider call and live E2B execution (no credentials in this session).

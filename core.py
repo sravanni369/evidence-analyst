@@ -65,7 +65,7 @@ def regression(df, target, features):
     metrics = {'model_mae': float(mean_absolute_error(ytest, pred)),
         'baseline_mae': float(mean_absolute_error(ytest, baseline.predict(xtest))),
         'train_rows': len(xtrain), 'test_rows': len(xtest), 'seed': 42,
-        'caution': 'Random holdout only. Manually exclude leakage; use time/group split for dependent records. Synthetic data is not business validation.'}
+        'caution': 'Random holdout only. Manually exclude leakage; use time/group split for dependent records. A low error on a target derived from the predictors is not business validation.'}
     return metrics, pd.DataFrame({'actual': ytest.to_numpy(), 'predicted': pred})
 
 def export_bundle(df, audit, result=None):

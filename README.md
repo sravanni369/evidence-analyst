@@ -2,9 +2,29 @@
 
 An inspectable CSV analysis workbench: upload data, review quality checks, ask a question, compare a regression model with a baseline, and export tables for Power BI.
 
-![Question answering in the app](docs/app.png)
+![CI](https://github.com/sravanni369/evidence-analyst/actions/workflows/test.yml/badge.svg)
 
-![Native Power BI report](docs/dashboard.png)
+**Stack:** Python · pandas · scikit-learn · Streamlit · DSPy · E2B · Power BI (PBIP/DAX) · pytest · GitHub Actions
+
+## Screenshots
+
+All screenshots are real output from the bundled synthetic dataset, not mockups.
+
+| Ask a question (offline mode) | Data quality profile |
+|---|---|
+| ![Revenue by region answer in the app](docs/app.png) | ![Column profile showing missing and unique counts](docs/data-quality.png) |
+
+| ML baseline: Random Forest vs mean prediction | Automated test suite |
+|---|---|
+| ![Model MAE 42.66 vs baseline MAE 392.46](docs/ml-baseline.png) | ![17 tests passing](docs/tests.png) |
+
+**Native Power BI report** (Power BI Desktop, `powerbi/project/EvidenceAnalyst.pbip`):
+
+![Power BI report, all regions: 200 orders, $98,108.25 revenue](docs/dashboard.png)
+
+Region slicer set to East (51 orders, $28,040.50, which matches the app's Revenue by region answer):
+
+![Power BI report filtered to East](docs/dashboard-east.png)
 
 ## Run
 
@@ -64,7 +84,7 @@ Numeric regression uses a fixed random holdout, training-only median imputation,
 
 ## Architecture
 
-`Streamlit â†’ pandas validation/cleaning â†’ fixed analysis OR DSPy â†’ reviewed code â†’ E2B â†’ result table â†’ CSV bundle â†’ Power BI`
+`Streamlit → pandas validation/cleaning → fixed analysis OR DSPy → reviewed code → E2B → result table → CSV bundle → Power BI`
 
 Each AI run uses a new sandbox, destroyed in a finally block. The provider API key is used by DSPy on the host and is not intentionally injected into the sandbox.
 

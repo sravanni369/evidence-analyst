@@ -18,3 +18,8 @@ Power BI Desktop: native report opened, embedded synthetic data refreshed, nine 
 Power BI report-format compatibility: metadata version 2.0.0 is required for this June 2025 Desktop installation. Earlier draft versions passed schema validation but did not render, and were retired. Final project: powerbi/project/EvidenceAnalyst.pbip. PBIR definition files: 13 passed validation against Microsoft's published JSON schemas. Screenshots: docs/dashboard.png and docs/dashboard-east.png.
 Power BI is delivered as an editable .pbip project with report and semantic model folders, not a .pbix binary or a Power BI Service publication. Opening without a local data cache requires Refresh; only synthetic data is embedded.
 Not verified: live DSPy provider call, live E2B execution, production deployment or public multi-user security. No service credentials were configured in this session. scripts/smoke_live.py provides an opt-in known-answer test.
+
+Re-verified on October 24, 2026 before publishing (Linux, Python 3.13, fresh venv from requirements.txt):
+Executed: python -m pytest -v — 17 passed. Executed: python demo.py — metrics identical to the values above.
+App screenshots docs/app.png, docs/data-quality.png and docs/ml-baseline.png were captured from the running Streamlit app (headless Chromium) on the bundled synthetic data; docs/tests.png renders the real pytest output.
+Cross-check: app Revenue by region gives East 28,040.50 and a five-region total of 98,108.25, matching the Power BI reconciliation table.

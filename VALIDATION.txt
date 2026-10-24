@@ -34,3 +34,12 @@ Bug found and fixed by this test: the banner said "Bundled sample is synthetic" 
 Executed: python -m pytest -q: 20 passed (17 previous + 3 real-data known-answer tests).
 ML note: on this data revenue = units x unit_price, so the regression is again trivially predictable (MAE 15.78 vs baseline 123.74); not evidence of forecasting skill.
 Still not verified: live DSPy provider call and live E2B execution (no credentials in this session).
+
+Real 2026 US data verification on October 24, 2026:
+Dataset: Iowa Liquor Sales, 2026 (Iowa Department of Revenue, Alcohol Operations Bureau; data.iowa.gov dataset 1263; CC BY 4.0), downloaded from https://idh-be.iowa.gov/api/v1/datasets/1263/rows.csv on October 24, 2026 (catalog last modified October 6, 2026). Zip SHA-256 e29b323aa868d3f34bd998ba6faa97e52d07bb2834ee66003ecdbac451cbddd7 (publisher updates it; the checksum will change). Full file: 1,814,856 lines, 2026-01-01 to 2026-09-30.
+Extract: 21-27 September 2026 (most recent complete week; 50,000-row app limit), mapped by scripts/prepare_iowa_2026.py, no pre-cleaning. data/iowa_liquor_2026-09-21_to_2026-09-27.csv SHA-256 117ee110da3e706c58001c1d43b47da05472d53e71c50e23ce86556981a976d4, 48,778 rows, 3.60 MB.
+App results: 48,778 rows; 0 exact duplicates; 26 missing cells (all region/county, preserved); 99 counties plus missing; total sales 8,090,651.73; Polk 1,903,101.82.
+Independent check (csv module + Decimal, no pandas): identical on every count and every county total to the cent.
+Real browser: uploaded the file into the running app; screenshots docs/iowa-2026-app.png and docs/iowa-2026-quality.png.
+Findings: 30 return lines (negative bottles); 963 lines where sales_dollars differs from bottles x state_bottle_retail by more than 0.01, so published revenue is used; store_no leading zeros are dropped when pandas infers an integer type (totals unaffected).
+Executed: python -m pytest -q: 21 passed. ML on this data: MAE 83.57 vs baseline 659.72 (revenue is largely units x price, so again not forecasting evidence).

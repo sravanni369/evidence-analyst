@@ -51,7 +51,27 @@ python -m pytest -q
 
 The sample contains 201 synthetic retail rows, one exact duplicate and one missing region. Cleaning removes the duplicate and preserves the missing value. No real customers or financial outcomes are represented.
 
-## Verified on real data
+## Verified on real 2026 US data
+
+The app has been run on the most recent complete week (21–27 September 2026) of **Iowa Liquor Sales, 2026**, the State of Iowa's official record of every spirits purchase by licensed stores. Upload `data/iowa_liquor_2026-09-21_to_2026-09-27.csv` to reproduce it, or rebuild it from the publisher with `python scripts/prepare_iowa_2026.py` (about a 400 MB download).
+
+| Check | App result | Independent check |
+|---|---|---|
+| Sales lines | 48,778 (no exact duplicates that week) | same |
+| Missing cells (county not recorded, kept as missing) | 26 | same |
+| Counties | 99, plus lines with no county | same |
+| Total sales, all counties | $8,090,651.73 | same, to the cent |
+| Polk County (Des Moines) | $1,903,101.82 | same, to the cent |
+
+| 2026 data: Revenue by county | 2026 data: quality profile |
+|---|---|
+| ![App answering revenue by county on Iowa September 2026 sales](docs/iowa-2026-app.png) | ![Quality profile on Iowa 2026 data showing 26 missing counties](docs/iowa-2026-quality.png) |
+
+Real-data findings the app surfaces: 26 sales lines have no county; 30 lines are returns (negative bottles); and 963 lines have a sales total that differs from bottles × listed retail price by more than a cent, so `revenue` is used as published rather than recomputed. Store numbers with leading zeros (for example `010604`) are read as numbers by pandas and lose the zero; this does not affect totals.
+
+Dataset credit: Iowa Department of Revenue, Alcohol Operations Bureau, *Iowa Liquor Sales, 2026*, [data.iowa.gov dataset 1263](https://data.iowa.gov/catalog/dataset/1263), licensed [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The repository includes a column-mapped one-week extract; the mapping is in the prep script.
+
+### Second real dataset: UCI Online Retail
 
 The app has also been run on one real month (December 2010) of the **UCI Online Retail** dataset: real UK e-commerce transactions, not pre-cleaned. Upload `data/online_retail_2010-12.csv` in the app to reproduce it, or rebuild the file from the original source with `python scripts/prepare_online_retail.py` (needs `openpyxl`; checks the download's SHA-256).
 
@@ -94,7 +114,7 @@ Numeric regression uses a fixed random holdout, training-only median imputation,
 
 ## Boundaries and current status
 
-- 20 automated tests pass, covering the core, Streamlit interactions, uploaded-dataset changes, mocked sandbox cleanup, and known answers on real UCI Online Retail data. A real DSPy signature is tested with a scripted model.
+- 21 automated tests pass, covering the core, Streamlit interactions, uploaded-dataset changes, mocked sandbox cleanup, and known answers on two real datasets (Iowa Liquor Sales 2026 and UCI Online Retail). A real DSPy signature is tested with a scripted model.
 - AI adapter follows official APIs but live cloud execution needs credentials and remains unverified until run.
 - A native Power BI project is included at `powerbi/project/EvidenceAnalyst.pbip`, with embedded synthetic data, DAX measures and nine visuals. See `powerbi/README.md` and `VALIDATION.txt` for Desktop validation status.
 - UI verification status is recorded in VALIDATION.txt.

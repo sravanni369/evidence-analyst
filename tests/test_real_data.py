@@ -60,3 +60,22 @@ def test_uploaded_file_is_not_labelled_synthetic(monkeypatch):
     banner = app.info[0].value
     assert 'online_retail_2010-12.csv' in banner and 'synthetic' not in banner
     assert [m.value for m in app.metric] == ['41981', '500', '15627']
+
+
+IOWA = ROOT / 'data' / 'iowa_liquor_2026-09-21_to_2026-09-27.csv'
+
+
+def test_iowa_2026_week_matches_independent_decimal_sum():
+    """Iowa Liquor Sales, 2026 (Iowa Dept. of Revenue, CC BY 4.0), week of 21-27 Sep 2026."""
+    df, audit = clean(read_csv(IOWA.read_bytes()))
+    assert (audit['input_rows'], audit['duplicates_removed'], audit['missing_cells']) == (48778, 0, 26)
+    app = answer(df, 'Revenue by region')
+    app = {(r if isinstance(r, str) else None): v for r, v in zip(app['region'], app['revenue'])}
+    expected = defaultdict(Decimal)
+    for row in csv.DictReader(IOWA.open(newline='', encoding='utf-8')):
+        expected[row['region'].strip() or None] += Decimal(row['revenue'])
+    assert len(app) == len(expected) == 100  # 99 counties + rows with no county
+    for region, total in expected.items():
+        assert abs(Decimal(str(app[region])) - total) < Decimal('0.005'), region
+    assert round(sum(app.values()), 2) == 8090651.73
+    assert round(app['POLK'], 2) == 1903101.82
